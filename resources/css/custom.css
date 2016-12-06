@@ -3,3 +3,8 @@ footer {
   color: white;
   padding: 15px;
 }
+
+.cust-sidebar {
+  background-color: solid #000000;
+  width: 25%;
+}
