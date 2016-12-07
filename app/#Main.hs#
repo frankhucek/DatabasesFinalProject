@@ -26,7 +26,8 @@ routes = do
   S.get "/" $ serveStaticHTML "static/html/index.html"
   S.get "/about" $ serveStaticHTML "static/html/about.html"
   S.get "/search" $ serveStaticHTML "static/html/search.html"
-
+  S.post "/searchquery" $ do
+    -- get search query string
 
 serveStaticHTML :: String -> ActionM()
 serveStaticHTML html_file = do

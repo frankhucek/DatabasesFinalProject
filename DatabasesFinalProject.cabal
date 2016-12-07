@@ -31,6 +31,7 @@ executable DatabasesFinalProject-exe
                      , scotty
                      , text
                      , bytestring
+                     , sqlite-simple
                      , DatabasesFinalProject
   default-language:    Haskell2010
 
