@@ -21,10 +21,13 @@ main = scotty 1888 $ do
 routes :: ScottyM ()
 routes = do
   S.get "/" $ serveStaticHTML "static/html/index.html"
+  S.get "/about" $ serveStaticHTML "static/html/about.html"
+  S.get "/search" $ serveStaticHTML "static/html/search.html"
 
 
 serveStaticHTML :: String -> ActionM()
 serveStaticHTML html_file = do
   html_raw <- liftIO $ readFile html_file
-  liftIO $ putStrLn $ html_raw
-  S.html $ T.pack html_raw
+  html_header <- liftIO $ readFile "static/html/header.html"
+  html_footer <- liftIO $ readFile "static/html/footer.html"
+  S.html $ T.pack $ html_header ++ html_raw ++ html_footer
