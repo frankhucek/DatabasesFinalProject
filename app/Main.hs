@@ -26,18 +26,20 @@ routes = do
   S.get "/" $ serveStaticHTML "static/html/index.html"
   S.get "/about" $ serveStaticHTML "static/html/about.html"
   S.get "/search" $ serveStaticHTML "static/html/search.html"
+  S.post "/searchquery" $ do
+    -- get search query string
 
 
 serveStaticHTML :: String -> ActionM()
 serveStaticHTML html_file = do
-  liftIO $ do
-    db_conn <- open "IADB.db" -- Database connection, create 1 per connection if possible
-    table <- query_ db_conn "Select Song_ID,Name,Genre from Songs"
-    forM_ table $ \(id, name, genre) -> putStrLn $ show (id :: Int) ++ "\t" ++ (T.unpack name) ++ (T.unpack genre)
-    putStrLn $ show $ table
-    close db_conn
-
   html_raw <- liftIO $ readFile html_file
   html_header <- liftIO $ readFile "static/html/header.html"
   html_footer <- liftIO $ readFile "static/html/footer.html"
   S.html $ T.pack $ html_header ++ html_raw ++ html_footer
+
+getSongsByName :: String -> IO [(String, Int, String)] -- name, length, genre
+getSongsByName song_name = do
+  db_conn <- open "IADB.db" -- Database connection, create 1 per connection if possible
+  table <- query_ db_conn "Select Name,Length,Genre from Songs"
+  close db_conn
+  return table
