@@ -26,8 +26,12 @@ routes = do
   S.get "/" $ serveStaticHTML "static/html/index.html"
   S.get "/about" $ serveStaticHTML "static/html/about.html"
   S.get "/search" $ serveStaticHTML "static/html/search.html"
-  S.post "/searchquery" $ do
+  S.get "/searchquery" $ do
     -- get search query string
+    search <- param "search_box" -- looks through query that called this route
+    songInfo <- liftIO $ getSongsByName search
+    liftIO $ putStrLn $ show songInfo
+    redirect "/search"
 
 
 serveStaticHTML :: String -> ActionM()
@@ -40,6 +44,9 @@ serveStaticHTML html_file = do
 getSongsByName :: String -> IO [(String, Int, String)] -- name, length, genre
 getSongsByName song_name = do
   db_conn <- open "IADB.db" -- Database connection, create 1 per connection if possible
-  table <- query_ db_conn "Select Name,Length,Genre from Songs"
+  -- let q = ("Select Name,Length,Genre from Songs where lower(Name) like '%" `mappend` song_name `mappend` "%'")
+  let song_name' = "%" ++ song_name ++ "%"
+  putStrLn $ song_name
+  table <- queryNamed db_conn "Select Name,Length,Genre from Songs where lower(Name) like :song" [":song" := song_name']   -- implement later (Only (song_name :: String))
   close db_conn
   return table
