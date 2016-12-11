@@ -1,0 +1,248 @@
+<div class="jumbotron text-center">
+    <h1>Update</h1>
+    <p>Use these forums to insert data into the database</p>
+</div>
+
+<div class="container">
+    <h2 class="text-center">Insert An Album</h2>
+    <form id="AlbumsForm" class="form-horizontal" method="POST" action="/insertAlbum">
+        <!-- Albums(Album_ID, Name, Description, Release_Date, Picture_File_Path, Sales_Number, Record_Label) -->
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="albumsInputName">Name</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="albumsName" id="albumsInputName" placeholder="Name">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="albumsInputDescription">Description</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="albumsDescription" id="albumsInputDescription" placeholder="Description">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="albumsInputReleaseDate">Release Date</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="albumsReleaseDate" id="albumsInputReleaseDate" placeholder="Release Date">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="albumsInputPictureFilePath">Picture File Path</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="albumsPictureFilePath" id="albumsInputPictureFilePath" placeholder="Picture File Path">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="albumsInputSalesNumber">Sales Number</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" name="albumsSalesNumber" id="albumsInputSalesNumber" placeholder="SalesNumber">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="albumsInputRecordLabel">Record Label</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="albumsRecordLabel" id="albumsInputRecordLabel" placeholder="Record Label">
+            </div>
+        </div>
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Insert</button>
+        </div>
+    </form>
+</div>
+
+
+<div class="container">
+    <h2 class="text-center">Insert An Artist</h2>
+    <form id="ArtistForm" class="form-horizontal" method="POST" action="/insertArtist">
+        <!-- Artists(Artist_ID, Name, Description, Formation_Date, Picture_File_Path) -->
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="artistsInputName">Name</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="artistsName" id="artistInputName" placeholder="Name">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="artistInputDescription">Description</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="artistsDescription" id="artistInputDescription" placeholder="Description">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="artistInputFormationDate">Formation Date</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="artistsDescription" id="artistInputFormationDate" placeholder="Formation Date">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="artistInputPictureFilePath">Picture File Path</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="artistsPictureFilePath" id="artistInputPictureFilePath" placeholder="Picture File Path">
+            </div>
+        </div>
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Insert</button>
+        </div>
+    </form>
+</div>
+
+<div class="container">
+    <h2 class="text-center">Insert A Song</h2>
+    <form id="SongsForm" class="form-horizontal" method="POST" action="/insertSong">
+        <!-- Songs(Song_ID, Name, Length, Lyrics, Rank, Genre, File_Path) -->
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="songsInputName">Name</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="songsName" id="songsInputName" placeholder="Name">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="songsInputLength">Length</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" name="songsLength" id="songsInputLength" placeholder="Length">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="songsInputLyrics">Lyrics</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="songsLyrics" id="songsInputLyrics" placeholder="Lyrics">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="songsInputRank">Rank</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" name="songsRank" id="songsInputRank" placeholder="Rank">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="songsInputGenre">Genre</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="songsGenre" id="songsInputGenre" placeholder="Genre">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="songsInputFilePath">File Path</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="songsFilePath" id="songsInputFilePath" placeholder="File Path">
+            </div>
+        </div>
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Insert</button>
+        </div>
+    </form>
+</div>
+
+<div class="container">
+    <h2 class="text-center">Insert A Musician</h2>
+    <form id="MusiciansForm" class="form-horizontal">
+        <!-- Musicians(Musician_ID, Name, Date_Of_Birth) -->
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="musiciansInputName">Name</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="musiciansInputName" placeholder="Name">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="musiciansInputDateOfBirth">Date of Birth</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="musiciansDateOfBirth" id="musiciansInputDateOfBirth" placeholder="Date of Birth">
+            </div>
+        </div>
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Insert</button>
+        </div>
+    </form>
+</div>
+
+<!-- RELATIONSHIPS -->
+
+<div class="container">
+    <h2 class="text-center">Insert Into Tracks</h2>
+    <form id="TracksForm" class="form-horizontal" method="POST" action="/insertTracks">
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="tracksInputSongID">Song ID</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" name="tracksSongID" id="tracksInputSongID" placeholder="Song ID">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="tracksInputAlbumID">Album ID</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" name="tracksAlbumID" id="tracksInputAlbumID" placeholder="Album ID">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="trackNumber">Track Number</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" name="tracksNumber" id="trackNumber" placeholder="Track Number">
+            </div>
+        </div>
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Insert</button>
+        </div>
+    </form>
+</div>
+
+
+<div class="container">
+    <h2 class="text-center">Insert Into Creates</h2>
+    <form id="createsForm" class="form-horizontal" method="POST" action="/insertCreates">
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="createsInputSongID">Song ID</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" name="createsSongID" id="createsInputSongID" placeholder="Song ID">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="createsInputArtistID">Artist ID</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" name="createsArtistID" id="createsInputArtistID" placeholder="Artist ID">
+            </div>
+        </div>
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Insert</button>
+        </div>
+    </form>
+</div>
+
+
+<div class="container">
+    <h2 class="text-center">Insert Into Produces</h2>
+    <form id="producesForm" class="form-horizontal" method="POST" action="/insertProduces">
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="producesInputAlbumID">Album ID</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" name="producesAlbumID" id="producesInputAlbumID" placeholder="Album ID">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="producesInputArtistID">Artist ID</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" name="producesArtistID" id="producesInputArtistID" placeholder="Artist ID">
+            </div>
+        </div>
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Insert</button>
+        </div>
+    </form>
+</div>
+
+
+<div class="container">
+    <h2 class="text-center">Insert Into Member Of</h2>
+    <form id="memberOfForm" class="form-horizontal" method="POST" action="/insertMemberOf">
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="memberOfInputMusicianID">Musician ID</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" name="memberOfMusicianID" id="memberOfInputMusicianID" placeholder="Musician ID">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="memberOfInputArtistID">Artist ID</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" name="memberOfArtistID" id="memberOfInputArtistID" placeholder="Artist ID">
+            </div>
+        </div>
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Insert</button>
+        </div>
+    </form>
+</div>
