@@ -124,3 +124,11 @@ getAlbumsByGenre input = do
   albums <- (queryNamed db_conn "select distinct Albums_and_Tracks.Name, Albums_and_Tracks.Description from (Albums inner join Tracks on Albums.Album_ID = Tracks.Album_ID) as Albums_and_Tracks inner join Songs on Songs.Song_ID = Albums_and_Tracks.Song_ID where lower(Songs.Genre) like :genre" [":genre" := input']) :: IO [(String,String)]
   close db_conn
   return $ map show albums
+
+getTracksByAlbum :: String -> IO [String]
+getTracksByAlbum input = do
+  db_conn <- open db_file
+  let input' = "%" ++ input ++ "%"
+  albums <- (queryNamed db_conn "select Songs.Name, Songs.Length, Track_Number from (Albums inner join Tracks on Albums.Album_ID = Tracks.Album_ID) as Albums_and_Tracks inner join Songs on Songs.Song_ID = Albums_and_Tracks.Song_ID where lower(Albums.Name) like :album)" [":album" := input']) :: IO [(String,Int, Int)]
+  close db_conn
+  return $ map show albums
