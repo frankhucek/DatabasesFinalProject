@@ -7,9 +7,9 @@
     <h2 class="text-center">Delete An Album</h2>
     <form id="AlbumsForm" class="form-horizontal" method="post" action="/deleteAlbum">
         <div class="form-group">
-            <label class="control-label col-sm-2" for="albumsInputID">Album ID</label>
+            <label class="control-label col-sm-2" for="albumsInputID">Album ID (Required)</label>
             <div class="col-sm-10">
-                <input type="number" class="form-control" id="albumsInputID" placeholder="ID" name="albumID">
+                <input type="number" class="form-control" id="albumsInputID" placeholder="ID" name="albumID" required>
             </div>
         </div>
         <div class="col-sm-offset-2 col-sm-10">
@@ -23,9 +23,9 @@
     <h2 class="text-center">Delete An Artist</h2>
     <form id="ArtistForm" class="form-horizontal" method="post" action="/deleteArtist">
         <div class="form-group">
-            <label class="control-label col-sm-2" for="artistInputID">Artist ID</label>
+            <label class="control-label col-sm-2" for="artistInputID">Artist ID (Required)</label>
             <div class="col-sm-10">
-                <input type="number" class="form-control" id="artistInputID" placeholder="ID" name="artistID">
+                <input type="number" class="form-control" id="artistInputID" placeholder="ID" name="artistID" required>
             </div>
         </div>
         <div class="col-sm-offset-2 col-sm-10">
@@ -38,9 +38,9 @@
     <h2 class="text-center">Delete A Song</h2>
     <form id="SongsForm" class="form-horizontal" method="post" action="/deleteSong">
         <div class="form-group">
-            <label class="control-label col-sm-2" for="songsInputID">Song ID</label>
+            <label class="control-label col-sm-2" for="songsInputID">Song ID (Required)</label>
             <div class="col-sm-10">
-                <input type="number" class="form-control" id="songsInputID" placeholder="ID" name="songID">
+                <input type="number" class="form-control" id="songsInputID" placeholder="ID" name="songID" required>
             </div>
         </div>
         <div class="col-sm-offset-2 col-sm-10">
@@ -53,9 +53,9 @@
     <h2 class="text-center">Delete A Musician</h2>
     <form id="MusiciansForm" class="form-horizontal" method="post" action="/deleteMusician">
         <div class="form-group">
-            <label class="control-label col-sm-2" for="musiciansInputName">Musician ID</label>
+            <label class="control-label col-sm-2" for="musiciansInputName">Musician ID (Required)</label>
             <div class="col-sm-10">
-                <input type="number" class="form-control" id="musiciansInputName" placeholder="ID" name="musicianID">
+                <input type="number" class="form-control" id="musiciansInputName" placeholder="ID" name="musicianID" required>
             </div>
         </div>
         <div class="col-sm-offset-2 col-sm-10">
@@ -69,9 +69,9 @@
     <!-- Produces(Album_ID, Artist_ID) -->
     <form id="ProducesForm" class="form-horizontal" method="post" action="/deleteProduces">
         <div class="form-group">
-            <label class="control-label col-sm-2" for="producesInputAlbumID">Album ID</label>
+            <label class="control-label col-sm-2" for="producesInputAlbumID">Album ID (Required)</label>
             <div class="col-sm-10">
-                <input type="number" class="form-control" id="producesInputAlbumID" placeholder="ID" name="producesAlbumID">
+                <input type="number" class="form-control" id="producesInputAlbumID" placeholder="ID" name="producesAlbumID" required>
             </div>
         </div>
         <div class="col-sm-offset-2 col-sm-10">
@@ -85,9 +85,9 @@
     <!-- Member_Of(Musician_ID, Artist_ID) -->
     <form id="MemberOfForm" class="form-horizontal" method="post" action="/deleteMemberOf">
         <div class="form-group">
-            <label class="control-label col-sm-2" for="memberOfInputMusicianID">Musician ID</label>
+            <label class="control-label col-sm-2" for="memberOfInputMusicianID">Musician ID (Required)</label>
             <div class="col-sm-10">
-                <input type="number" class="form-control" id="memberOfInputMusicianID" placeholder="ID" name="memberOfMusicianID">
+                <input type="number" class="form-control" id="memberOfInputMusicianID" placeholder="ID" name="memberOfMusicianID" required>
             </div>
         </div>
         <div class="col-sm-offset-2 col-sm-10">
@@ -101,9 +101,9 @@
     <!-- Creates(Song_ID, Artist_ID) -->
     <form id="CreatesForm" class="form-horizontal" method="post" action="/deleteCreates">
         <div class="form-group">
-            <label class="control-label col-sm-2" for="createsInputSongID">Song ID</label>
+            <label class="control-label col-sm-2" for="createsInputSongID">Song ID (Required)</label>
             <div class="col-sm-10">
-                <input type="number" class="form-control" id="createsInputSongID" placeholder="ID" name="createsSongID">
+                <input type="number" class="form-control" id="createsInputSongID" placeholder="ID" name="createsSongID" required>
             </div>
         </div>
         <div class="col-sm-offset-2 col-sm-10">
@@ -117,9 +117,9 @@
     <!-- Tracks(Song_ID, Album_ID, Track_Number) -->
     <form id="TracksForm" class="form-horizontal" method="post" action="/deleteTracks">
         <div class="form-group">
-            <label class="control-label col-sm-2" for="tracksInputSongID">Song ID</label>
+            <label class="control-label col-sm-2" for="tracksInputSongID">Song ID (Required)</label>
             <div class="col-sm-10">
-                <input type="number" class="form-control" id="tracksInputSongID" placeholder="ID" name="tracksSongID">
+                <input type="number" class="form-control" id="tracksInputSongID" placeholder="ID" name="tracksSongID" required>
             </div>
         </div>
         <div class="col-sm-offset-2 col-sm-10">
