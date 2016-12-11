@@ -17,6 +17,7 @@ db_file = "IADB.db"
 
 main :: IO ()
 main = do
+  putStrLn ("STARTING SCOTTY")
   scotty 1888 $ do
     middleware $ staticPolicy $ hasPrefix "static/"
     routes
@@ -34,8 +35,8 @@ routes = do
     albumInfo <- liftIO $ getAlbumsByName search
     artistInfo <- liftIO $ getArtistsByName search
     musicianInfo <- liftIO $ getMusiciansByName search
-    serveQueryPage (formatStringList songInfo) (formatStringList albumInfo) (formatStringList artistInfo) (formatStringList musicianInfo) -- format Strings for print here
-    -- redirect "/search"
+    genreInfo <- liftIO $ getAlbumsByGenre search
+    serveQueryPage (formatStringList songInfo) (formatStringList albumInfo) (formatStringList artistInfo) (formatStringList musicianInfo) (formatStringList genreInfo)-- format Strings for print here
 
 
 
@@ -52,15 +53,22 @@ serveStaticHTML html_file = do
 
 -- takes a song and puts it on a page
 -- IN FUTURE TAKE TYPE => Songs -> Albums -> Artists -> etc for all tables
-serveQueryPage :: String -> String -> String -> String -> ActionM()
-serveQueryPage songInfo albumInfo artistInfo musicianInfo = do
+serveQueryPage :: String -> String -> String -> String -> String -> ActionM()
+serveQueryPage songInfo albumInfo artistInfo musicianInfo genreInfo = do
   html_raw <- liftIO $ readFile "static/html/search.html"
   html_header <- liftIO $ readFile "static/html/header.html"
   html_footer <- liftIO $ readFile "static/html/footer.html"
-  S.html $ T.pack $ html_header ++ html_raw ++ songInfo
-    ++ "<br/><br/>" ++ albumInfo
-    ++ "<br/><br/>" ++ artistInfo
-    -- ++ "<br/><br/>" ++ musicianInfo
+  song_hdr <- liftIO $ readFile "static/html/songOut.html"
+  album_hdr <- liftIO $ readFile "static/html/albumOut.html"
+  artist_hdr <- liftIO $ readFile "static/html/artistOut.html"
+  musician_hdr <- liftIO $ readFile "static/html/musicianOut.html"
+  genre_hdr <- liftIO $ readFile "static/html/genreOut.html"
+  S.html $ T.pack $ html_header ++ html_raw
+    ++ "<br/><br/>" ++ song_hdr ++ songInfo
+    ++ "<br/><br/>" ++ album_hdr ++ albumInfo
+    ++ "<br/><br/>" ++ artist_hdr ++ artistInfo
+    ++ "<br/><br/>" ++ musician_hdr ++ musicianInfo
+    ++ "<br/><br/>" ++ genre_hdr ++ genreInfo
     ++ html_footer
 
 replc :: Char -> Char
@@ -69,6 +77,11 @@ replc x = x
 
 replce :: String -> String
 replce s = map replc s
+
+
+{-
+QUERIES
+-}
 
 -- print both return lists
 getSongsByName :: String -> IO [String] -- name, length, genre; album name.
@@ -99,8 +112,23 @@ getMusiciansByName :: String -> IO [String]
 getMusiciansByName input = do
   db_conn <- open db_file
   let input' = "%" ++ input ++ "%"
-  putStrLn "Failing"
   albums <- (queryNamed db_conn "SELECT Musician_ID, Name FROM Musicians WHERE lower(Name) like :musician" [":musician" := input']) :: IO [(Int,String)]
 
+  close db_conn
+  return $ map show albums
+
+getAlbumsByGenre :: String -> IO [String]
+getAlbumsByGenre input = do
+  db_conn <- open db_file
+  let input' = "%" ++ input ++ "%"
+  albums <- (queryNamed db_conn "select distinct Albums_and_Tracks.Name, Albums_and_Tracks.Description from (Albums inner join Tracks on Albums.Album_ID = Tracks.Album_ID) as Albums_and_Tracks inner join Songs on Songs.Song_ID = Albums_and_Tracks.Song_ID where lower(Songs.Genre) like :genre" [":genre" := input']) :: IO [(String,String)]
+  close db_conn
+  return $ map show albums
+
+getTracksByAlbum :: String -> IO [String]
+getTracksByAlbum input = do
+  db_conn <- open db_file
+  let input' = "%" ++ input ++ "%"
+  albums <- (queryNamed db_conn "select Songs.Name, Songs.Length, Track_Number from (Albums inner join Tracks on Albums.Album_ID = Tracks.Album_ID) as Albums_and_Tracks inner join Songs on Songs.Song_ID = Albums_and_Tracks.Song_ID where lower(Albums.Name) like :album)" [":album" := input']) :: IO [(String,Int, Int)]
   close db_conn
   return $ map show albums
