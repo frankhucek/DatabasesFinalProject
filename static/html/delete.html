@@ -5,7 +5,7 @@
 
 <div class="container">
     <h2 class="text-center">Delete An Album</h2>
-    <form id="AlbumsForm" class="form-horizontal" method="post" action="deleteAlbum">
+    <form id="AlbumsForm" class="form-horizontal" method="post" action="/deleteAlbum">
         <div class="form-group">
             <label class="control-label col-sm-2" for="albumsInputID">Album ID</label>
             <div class="col-sm-10">
@@ -21,7 +21,7 @@
 
 <div class="container">
     <h2 class="text-center">Delete An Artist</h2>
-    <form id="ArtistForm" class="form-horizontal" method="post" action="deleteArtist">
+    <form id="ArtistForm" class="form-horizontal" method="post" action="/deleteArtist">
         <div class="form-group">
             <label class="control-label col-sm-2" for="artistInputID">Artist ID</label>
             <div class="col-sm-10">
@@ -36,7 +36,7 @@
 
 <div class="container">
     <h2 class="text-center">Delete A Song</h2>
-    <form id="SongsForm" class="form-horizontal" method="post" action="deleteSong">
+    <form id="SongsForm" class="form-horizontal" method="post" action="/deleteSong">
         <div class="form-group">
             <label class="control-label col-sm-2" for="songsInputID">Song ID</label>
             <div class="col-sm-10">
@@ -51,11 +51,75 @@
 
 <div class="container">
     <h2 class="text-center">Delete A Musician</h2>
-    <form id="MusiciansForm" class="form-horizontal" method="post" action="deleteMusician">
+    <form id="MusiciansForm" class="form-horizontal" method="post" action="/deleteMusician">
         <div class="form-group">
             <label class="control-label col-sm-2" for="musiciansInputName">Musician ID</label>
             <div class="col-sm-10">
                 <input type="number" class="form-control" id="musiciansInputName" placeholder="ID" name="musicianID">
+            </div>
+        </div>
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Delete</button>
+        </div>
+    </form>
+</div>
+
+<div class="container">
+    <h2 class="text-center">Delete From Produces</h2>
+    <!-- Produces(Album_ID, Artist_ID) -->
+    <form id="ProducesForm" class="form-horizontal" method="post" action="/deleteProduces">
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="producesInputAlbumID">Album ID</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" id="producesInputAlbumID" placeholder="ID" name="producesAlbumID">
+            </div>
+        </div>
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Delete</button>
+        </div>
+    </form>
+</div>
+
+<div class="container">
+    <h2 class="text-center">Delete From Member Of</h2>
+    <!-- Member_Of(Musician_ID, Artist_ID) -->
+    <form id="MemberOfForm" class="form-horizontal" method="post" action="/deleteMemberOf">
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="memberOfInputMusicianID">Musician ID</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" id="memberOfInputMusicianID" placeholder="ID" name="memberOfMusicianID">
+            </div>
+        </div>
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Delete</button>
+        </div>
+    </form>
+</div>
+
+<div class="container">
+    <h2 class="text-center">Delete From Creates</h2>
+    <!-- Creates(Song_ID, Artist_ID) -->
+    <form id="CreatesForm" class="form-horizontal" method="post" action="/deleteCreates">
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="createsInputSongID">Song ID</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" id="createsInputSongID" placeholder="ID" name="createsSongID">
+            </div>
+        </div>
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Delete</button>
+        </div>
+    </form>
+</div>
+
+<div class="container">
+    <h2 class="text-center">Delete From Tracks</h2>
+    <!-- Tracks(Song_ID, Album_ID, Track_Number) -->
+    <form id="TracksForm" class="form-horizontal" method="post" action="/deleteTracks">
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="tracksInputSongID">Song ID</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" id="tracksInputSongID" placeholder="ID" name="tracksSongID">
             </div>
         </div>
         <div class="col-sm-offset-2 col-sm-10">
