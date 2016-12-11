@@ -42,7 +42,6 @@ routes = do
 
   S.get "/add" $ serveStaticHTML "static/html/add.html"
 
-
   S.post "/insertSong" $ do
     name <- param "songsName"
     len <- param "songsLength"
@@ -51,6 +50,16 @@ routes = do
     genre <- param "songsGenre"
     fp <- param "songsFilePath"
     liftIO $ insertSong name len lyr rank genre fp
+    redirect "/add"
+
+  S.post "insertAlbum" $ do
+    name <- param "albumsName"
+    desc <- param "albumsDescription"
+    release <- param "albumsReleaseDate"
+    pic <- param "albumsPictureFilePath"
+    sales_num <- param "albumsSalesNumber"
+    label <- param "albumsRecordLabel"
+    liftIO $ insertAlbum name desc release pic sales_num label
     redirect "/add"
 
 formatStringList :: [String] -> String
@@ -167,4 +176,10 @@ insertSong :: String -> Int -> String -> Int -> String -> String -> IO ()
 insertSong name len lyrics rank genre file_path = do
   db_conn <- open db_file
   executeNamed db_conn "INSERT INTO Songs (Name, Length, Lyrics, Rank, Genre, File_Path) VALUES (:name, :len, :lyrics, :rank, :genre, :fp)" [":name" := name, ":len" := len, ":lyrics" := lyrics, ":rank" := rank, ":genre" := genre, ":fp" := file_path]
+  close db_conn
+
+insertAlbum :: String -> String -> String -> String -> Int -> String -> IO ()
+insertAlbum name desc release pic sales_num label = do
+  db_conn <- open db_file
+  executeNamed db_conn "INSERT INTO Albums (Name, Description, Release_Date, Picture_File_Path, Sales_Number, Record_Label) VALUES (:name, :desc, :release, :pic, :sales_num, :label)" [":name" := name, ":desc" := desc, ":release" := release, ":pic" := pic, ":sales_num" := sales_num, ":label" := label]
   close db_conn
