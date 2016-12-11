@@ -28,6 +28,23 @@ routes = do
   S.get "/" $ serveStaticHTML "static/html/index.html"
   S.get "/about" $ serveStaticHTML "static/html/about.html"
   S.get "/search" $ serveStaticHTML "static/html/search.html"
+
+  S.get "/songs" $ do
+    songInfo <- liftIO $ getSongsByName ""
+    serveDataPage "static/html/songOut.html" (formatStringList songInfo)
+
+  S.get "/albums" $ do
+    albumInfo <- liftIO $ getAlbumsByName ""
+    serveDataPage "static/html/albumOut.html" (formatStringList albumInfo)
+
+  S.get "/artists" $ do
+    artistInfo <- liftIO $ getArtistsByName ""
+    serveDataPage "static/html/artistOut.html" (formatStringList artistInfo)
+
+  S.get "/musicians" $ do
+    musicianInfo <- liftIO $ getMusiciansByName ""
+    serveDataPage "static/html/musicianOut.html" (formatStringList musicianInfo)
+
   S.get "/searchquery" $ do
     -- get search query string
     search <- param "search_box" -- looks through query that called this route
@@ -52,7 +69,7 @@ routes = do
     liftIO $ insertSong name len lyr rank genre fp
     redirect "/add"
 
-  S.post "insertAlbum" $ do
+  S.post "/insertAlbum" $ do
     name <- param "albumsName"
     desc <- param "albumsDescription"
     release <- param "albumsReleaseDate"
@@ -60,6 +77,45 @@ routes = do
     sales_num <- param "albumsSalesNumber"
     label <- param "albumsRecordLabel"
     liftIO $ insertAlbum name desc release pic sales_num label
+    redirect "/add"
+
+  S.post "/insertArtist" $ do
+    name <- param "artistsName"
+    desc <- param "artistsDescription"
+    form_date <- param "artistsFormationDate"
+    pic <- param "artistsPictureFilePath"
+    liftIO $ insertArtist name desc form_date pic
+    redirect "/add"
+
+  S.post "/insertMusician" $ do
+    name <- param "musiciansName"
+    dob <- param "musiciansDateOfBirth"
+    liftIO $ insertMusician name dob
+    redirect "/add"
+
+  S.post "/insertTracks" $ do
+    song_id <- param "tracksSongID"
+    album_id <- param "tracksAlbumID"
+    track_num <- param "tracksNumber"
+    liftIO $ insertTrack song_id album_id track_num
+    redirect "/add"
+
+  S.post "/insertCreates" $ do
+    sid <- param "createsSongID"
+    aid <- param "createsArtistID"
+    liftIO $ insertIntoCreates sid aid
+    redirect "/add"
+
+  S.post "/insertProduces" $ do
+    albumid <- param "producesAlbumID"
+    artistid <- param "producesArtistID"
+    liftIO $ insertIntoProduces albumid artistid
+    redirect "/add"
+
+  S.post "/insertMemberOf" $ do
+    mid <- param "memberOfMusicianID"
+    aid <- param "memberOfArtistID"
+    liftIO $ insertIntoMemberOf mid aid
     redirect "/add"
 
 formatStringList :: [String] -> String
@@ -72,6 +128,12 @@ serveStaticHTML html_file = do
   html_footer <- liftIO $ readFile "static/html/footer.html"
   S.html $ T.pack $ html_header ++ html_raw ++ html_footer
 
+serveDataPage :: String -> String -> ActionM()
+serveDataPage label_file attr_data = do
+  html_label <- liftIO $ readFile label_file
+  html_header <- liftIO $ readFile "static/html/header.html"
+  html_footer <- liftIO $ readFile "static/html/footer.html"
+  S.html $ T.pack $ html_header ++ html_label ++ attr_data ++ html_footer
 
 -- takes a song and puts it on a page
 -- IN FUTURE TAKE TYPE => Songs -> Albums -> Artists -> etc for all tables
@@ -107,12 +169,14 @@ replce s = map replc s
 QUERIES
 -}
 
+-- SELECTS
+
 -- print both return lists
 getSongsByName :: String -> IO [String] -- name, length, genre; album name.
 getSongsByName input = do
   db_conn <- open db_file -- Database connection, create 1 per connection if possible
   let input' = "%" ++ input ++ "%"
-  songs <- (queryNamed db_conn "Select Name,Length,Genre from Songs where lower(Name) like :song" [":song" := input']) :: IO [(String, Int, String)]
+  songs <- (queryNamed db_conn "Select Song_ID,Name,Length,Genre from Songs where lower(Name) like :song" [":song" := input']) :: IO [(Int,String, Int, String)]
   close db_conn
   return $ map show songs
 
@@ -120,7 +184,7 @@ getAlbumsByName :: String -> IO [String]
 getAlbumsByName input = do
   db_conn <- open db_file -- Database connection, create 1 per connection if possible
   let input' = "%" ++ input ++ "%"
-  albums <- (queryNamed db_conn "SELECT Name,Description FROM Albums WHERE lower(Name) like :album" [":album" := input']) :: IO [(String, String)]
+  albums <- (queryNamed db_conn "SELECT Album_ID,Name,Description FROM Albums WHERE lower(Name) like :album" [":album" := input']) :: IO [(Int,String, String)]
   close db_conn
   return $ map show albums
 
@@ -128,7 +192,7 @@ getArtistsByName :: String -> IO [String]
 getArtistsByName input = do
   db_conn <- open db_file
   let input' = "%" ++ input ++ "%"
-  albums <- (queryNamed db_conn "SELECT Name,Description FROM Artists WHERE lower(Name) like :artist" [":artist" := input']) :: IO [(String,String)]
+  albums <- (queryNamed db_conn "SELECT Artist_ID,Name,Description FROM Artists WHERE lower(Name) like :artist" [":artist" := input']) :: IO [(Int,String,String)]
   close db_conn
   return $ map show albums
 
@@ -137,7 +201,6 @@ getMusiciansByName input = do
   db_conn <- open db_file
   let input' = "%" ++ input ++ "%"
   albums <- (queryNamed db_conn "SELECT Musician_ID, Name FROM Musicians WHERE lower(Name) like :musician" [":musician" := input']) :: IO [(Int,String)]
-
   close db_conn
   return $ map show albums
 
@@ -172,6 +235,10 @@ getAlbumsByDateRange start end = do
   close db_conn
   return $ map show albums
 
+
+-- INSERTS
+-- NO BACKEND ERROR CHECKING IS DONE ON INSERTS; must fill in every text box
+
 insertSong :: String -> Int -> String -> Int -> String -> String -> IO ()
 insertSong name len lyrics rank genre file_path = do
   db_conn <- open db_file
@@ -182,4 +249,40 @@ insertAlbum :: String -> String -> String -> String -> Int -> String -> IO ()
 insertAlbum name desc release pic sales_num label = do
   db_conn <- open db_file
   executeNamed db_conn "INSERT INTO Albums (Name, Description, Release_Date, Picture_File_Path, Sales_Number, Record_Label) VALUES (:name, :desc, :release, :pic, :sales_num, :label)" [":name" := name, ":desc" := desc, ":release" := release, ":pic" := pic, ":sales_num" := sales_num, ":label" := label]
+  close db_conn
+
+insertArtist :: String -> String -> String -> String  -> IO ()
+insertArtist name desc form_date pic = do
+  db_conn <- open db_file
+  executeNamed db_conn "INSERT INTO Artists (Name, Description, Formation_Date, Picture_File_Path) VALUES (:name, :desc, :form_date, :pic)" [":name" := name, ":desc" := desc, ":form_date" := form_date, ":pic" := pic]
+  close db_conn
+
+insertMusician :: String -> String -> IO ()
+insertMusician name dob = do
+  db_conn <- open db_file
+  executeNamed db_conn "INSERT INTO Musicians (Name, Date_Of_Birth) VALUES (:name, :dob)" [":name" := name, ":dob" := dob]
+  close db_conn
+
+insertTrack :: Int -> Int -> Int -> IO ()
+insertTrack sid aid track = do
+  db_conn <- open db_file
+  executeNamed db_conn "INSERT INTO Tracks (Song_ID, Album_ID, Track_Number) VALUES (:sid, :aid, :track)" [":sid" := sid, ":aid" := aid, ":track" := track]
+  close db_conn
+
+insertIntoCreates :: Int -> Int -> IO ()
+insertIntoCreates sid aid = do
+  db_conn <- open db_file
+  executeNamed db_conn "INSERT INTO Creates (Song_ID, Album_ID) VALUES (:sid, :aid)" [":sid" := sid, ":aid" := aid]
+  close db_conn
+
+insertIntoProduces :: Int -> Int -> IO ()
+insertIntoProduces albumid artistid = do
+  db_conn <- open db_file
+  executeNamed db_conn "INSERT INTO Produces (Artist_ID, Album_ID) VALUES (:artistid, :albumid)" [":artistid" := artistid, ":albumid" := albumid]
+  close db_conn
+
+insertIntoMemberOf :: Int -> Int -> IO ()
+insertIntoMemberOf mid aid = do
+  db_conn <- open db_file
+  executeNamed db_conn "INSERT INTO Member_Of (Artist_ID, Musician_ID) VALUES (:aid, :mid)" [":aid" := aid, ":mid" := mid]
   close db_conn
