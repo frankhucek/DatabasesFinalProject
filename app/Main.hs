@@ -57,11 +57,10 @@ serveQueryPage songInfo albumInfo artistInfo musicianInfo = do
   html_raw <- liftIO $ readFile "static/html/search.html"
   html_header <- liftIO $ readFile "static/html/header.html"
   html_footer <- liftIO $ readFile "static/html/footer.html"
-  S.html $ T.pack $ html_header ++ html_raw
-    ++ songInfo
+  S.html $ T.pack $ html_header ++ html_raw ++ songInfo
     ++ "<br/><br/>" ++ albumInfo
     ++ "<br/><br/>" ++ artistInfo
-    ++ "<br/><br/>" ++ musicianInfo
+    -- ++ "<br/><br/>" ++ musicianInfo
     ++ html_footer
 
 replc :: Char -> Char
@@ -100,6 +99,8 @@ getMusiciansByName :: String -> IO [String]
 getMusiciansByName input = do
   db_conn <- open db_file
   let input' = "%" ++ input ++ "%"
+  putStrLn "Failing"
   albums <- (queryNamed db_conn "SELECT Musician_ID, Name FROM Musicians WHERE lower(Name) like :musician" [":musician" := input']) :: IO [(Int,String)]
+
   close db_conn
   return $ map show albums
