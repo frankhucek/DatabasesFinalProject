@@ -31,9 +31,13 @@ routes = do
     search <- param "search_box" -- looks through query that called this route
     songInfo <- liftIO $ getSongsByName search
     albumInfo <- liftIO $ getAlbumsByName search
-    serveQueryPage songInfo albumInfo
+    serveQueryPage (formatStringList songInfo) (formatStringList albumInfo) -- format Strings for print here
     -- redirect "/search"
 
+
+
+formatStringList :: [String] -> String
+formatStringList info = foldr (++) [] $ fmap (++"<br/>") $ map replce info
 
 serveStaticHTML :: String -> ActionM()
 serveStaticHTML html_file = do
@@ -43,27 +47,34 @@ serveStaticHTML html_file = do
   S.html $ T.pack $ html_header ++ html_raw ++ html_footer
 
 -- print both return lists
-getSongsByName :: String -> IO [(String, Int, String)] -- name, length, genre; album name.
+getSongsByName :: String -> IO [String] -- name, length, genre; album name.
 getSongsByName input = do
   db_conn <- open "IADB.db" -- Database connection, create 1 per connection if possible
   let input' = "%" ++ input ++ "%"
-  songs <- queryNamed db_conn "Select Name,Length,Genre from Songs where lower(Name) like :song" [":song" := input']   -- implement later (Only (song_name :: String))
+  songs <- (queryNamed db_conn "Select Name,Length,Genre from Songs where lower(Name) like :song" [":song" := input']) :: IO [(String, Int, String)]
   close db_conn
-  return songs
+  return $ map show songs
 
-getAlbumsByName :: String -> IO [(String, String)]
+getAlbumsByName :: String -> IO [String]
 getAlbumsByName input = do
   db_conn <- open "IADB.db" -- Database connection, create 1 per connection if possible
   let input' = "%" ++ input ++ "%"
-  albums <- queryNamed db_conn "SELECT Name,Description FROM Albums WHERE lower(Name) like :album" [":album" := input']
+  albums <- (queryNamed db_conn "SELECT Name,Description FROM Albums WHERE lower(Name) like :album" [":album" := input']) :: IO [(String, String)]
   close db_conn
-  return albums
+  return $ map show albums
 
 -- takes a song and puts it on a page
 -- IN FUTURE TAKE TYPE => Songs -> Albums -> Artists -> etc for all tables
-serveQueryPage :: [(String, Int, String)] -> [(String, String)] -> ActionM()
+serveQueryPage :: String -> String -> ActionM()
 serveQueryPage songInfo albumInfo = do
   html_raw <- liftIO $ readFile "static/html/search.html"
   html_header <- liftIO $ readFile "static/html/header.html"
   html_footer <- liftIO $ readFile "static/html/footer.html"
-  S.html $ T.pack $ html_header ++ html_raw ++ (show songInfo) ++ "<br/><br/>" ++ (show albumInfo) ++ html_footer
+  S.html $ T.pack $ html_header ++ html_raw ++ songInfo ++ "<br/><br/>" ++ albumInfo ++ html_footer
+
+replc :: Char -> Char
+replc ',' = '\t'
+replc x = x
+
+replce :: String -> String
+replce s = map replc s
