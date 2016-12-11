@@ -40,7 +40,18 @@ routes = do
     album_genre <- liftIO $ getGenreOfAlbum search
     serveQueryPage (formatStringList songInfo) (formatStringList albumInfo) (formatStringList artistInfo) (formatStringList musicianInfo) (formatStringList genreInfo) (formatStringList trackInfo) (formatStringList album_genre)  -- format Strings for print here
 
+  S.get "/add" $ serveStaticHTML "static/html/add.html"
 
+
+  S.post "/insertSong" $ do
+    name <- param "songsName"
+    len <- param "songsLength"
+    lyr <- param "songsLyrics"
+    rank <- param "songsRank"
+    genre <- param "songsGenre"
+    fp <- param "songsFilePath"
+    liftIO $ insertSong name len lyr rank genre fp
+    redirect "/add"
 
 formatStringList :: [String] -> String
 formatStringList info = foldr (++) [] $ fmap (++"<br/>") $ map replce info
