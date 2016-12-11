@@ -5,11 +5,11 @@
 
 <div class="container">
     <h2 class="text-center">Delete An Album</h2>
-    <form id="AlbumsForm" class="form-horizontal">
+    <form id="AlbumsForm" class="form-horizontal" method="post" action="deleteAlbum">
         <div class="form-group">
             <label class="control-label col-sm-2" for="albumsInputID">Album ID</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="albumsInputID" placeholder="ID">
+                <input type="number" class="form-control" id="albumsInputID" placeholder="ID" name="albumID">
             </div>
         </div>
         <div class="col-sm-offset-2 col-sm-10">
@@ -21,11 +21,11 @@
 
 <div class="container">
     <h2 class="text-center">Delete An Artist</h2>
-    <form id="ArtistForm" class="form-horizontal">
+    <form id="ArtistForm" class="form-horizontal" method="post" action="deleteArtist">
         <div class="form-group">
             <label class="control-label col-sm-2" for="artistInputID">Artist ID</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="artistInputID" placeholder="ID">
+                <input type="number" class="form-control" id="artistInputID" placeholder="ID" name="artistID">
             </div>
         </div>
         <div class="col-sm-offset-2 col-sm-10">
@@ -36,11 +36,11 @@
 
 <div class="container">
     <h2 class="text-center">Delete A Song</h2>
-    <form id="SongsForm" class="form-horizontal">
+    <form id="SongsForm" class="form-horizontal" method="post" action="deleteSong">
         <div class="form-group">
             <label class="control-label col-sm-2" for="songsInputID">Song ID</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="songsInputID" placeholder="ID">
+                <input type="number" class="form-control" id="songsInputID" placeholder="ID" name="songID">
             </div>
         </div>
         <div class="col-sm-offset-2 col-sm-10">
@@ -51,11 +51,11 @@
 
 <div class="container">
     <h2 class="text-center">Delete A Musician</h2>
-    <form id="MusiciansForm" class="form-horizontal">
+    <form id="MusiciansForm" class="form-horizontal" method="post" action="deleteMusician">
         <div class="form-group">
             <label class="control-label col-sm-2" for="musiciansInputName">Musician ID</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="musiciansInputName" placeholder="ID">
+                <input type="number" class="form-control" id="musiciansInputName" placeholder="ID" name="musicianID">
             </div>
         </div>
         <div class="col-sm-offset-2 col-sm-10">
