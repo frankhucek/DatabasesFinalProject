@@ -37,7 +37,8 @@ routes = do
     musicianInfo <- liftIO $ getMusiciansByName search
     genreInfo <- liftIO $ getAlbumsByGenre search
     trackInfo <- liftIO $ getTracksByAlbum search
-    serveQueryPage (formatStringList songInfo) (formatStringList albumInfo) (formatStringList artistInfo) (formatStringList musicianInfo) (formatStringList genreInfo) (formatStringList trackInfo)  -- format Strings for print here
+    album_genre <- liftIO $ getGenreOfAlbum search
+    serveQueryPage (formatStringList songInfo) (formatStringList albumInfo) (formatStringList artistInfo) (formatStringList musicianInfo) (formatStringList genreInfo) (formatStringList trackInfo) (formatStringList album_genre)  -- format Strings for print here
 
 
 
@@ -54,8 +55,8 @@ serveStaticHTML html_file = do
 
 -- takes a song and puts it on a page
 -- IN FUTURE TAKE TYPE => Songs -> Albums -> Artists -> etc for all tables
-serveQueryPage :: String -> String -> String -> String -> String -> String -> ActionM()
-serveQueryPage songInfo albumInfo artistInfo musicianInfo genreInfo trackInfo = do
+serveQueryPage :: String -> String -> String -> String -> String -> String -> String -> ActionM()
+serveQueryPage songInfo albumInfo artistInfo musicianInfo genreInfo trackInfo album_genre = do
   html_raw <- liftIO $ readFile "static/html/search.html"
   html_header <- liftIO $ readFile "static/html/header.html"
   html_footer <- liftIO $ readFile "static/html/footer.html"
@@ -70,7 +71,7 @@ serveQueryPage songInfo albumInfo artistInfo musicianInfo genreInfo trackInfo = 
     ++ "<br/><br/>" ++ album_hdr ++ albumInfo
     ++ "<br/><br/>" ++ artist_hdr ++ artistInfo
     ++ "<br/><br/>" ++ musician_hdr ++ musicianInfo
-    ++ "<br/><br/>" ++ genre_hdr ++ genreInfo
+    ++ "<br/><br/>" ++ genre_hdr ++ genreInfo ++ "<br/><br/>" ++ album_genre
     ++ "<br/><br/>" ++ track_hdr ++ trackInfo
     ++ html_footer
 
@@ -135,3 +136,24 @@ getTracksByAlbum input = do
   albums <- (queryNamed db_conn "select Songs.Name, Songs.Length, Track_Number from (Albums inner join Tracks on Albums.Album_ID = Tracks.Album_ID) as Albums_and_Tracks inner join Songs on Songs.Song_ID = Albums_and_Tracks.Song_ID where lower(Albums.Name) like :album" [":album" := input']) :: IO [(String, Int, Int)]
   close db_conn
   return $ map show albums
+
+getGenreOfAlbum :: String -> IO [String]
+getGenreOfAlbum input = do
+  db_conn <- open db_file
+  let input' = "%" ++ input ++ "%"
+  albums <- (queryNamed db_conn "select distinct Songs.Genre, Albums_and_Tracks.Name from (Albums inner join Tracks on Albums.Album_ID = Tracks.Album_ID) as Albums_and_Tracks inner join Songs on Songs.Song_ID = Albums_and_Tracks.Song_ID where lower(Albums.Name) like :genre" [":genre" := input']) :: IO [(String,String)]
+  close db_conn
+  return $ map show albums
+
+getAlbumsByDateRange :: String -> String -> IO [String] -- no error checking on date values
+getAlbumsByDateRange start end = do
+  db_conn <- open db_file
+  albums <- (queryNamed db_conn "Select distinct Albums.Name, Albums.Description, Albums.Release_Date From Albums Where (Albums.Release_Date < :end and Albums.Release_Date > :start)" [":start" := start, ":end" := end]) :: IO [(String, String, T.Text)]
+  close db_conn
+  return $ map show albums
+
+insertSong :: String -> Int -> String -> Int -> String -> String -> IO ()
+insertSong name len lyrics rank genre file_path = do
+  db_conn <- open db_file
+  executeNamed db_conn "INSERT INTO Songs (Name, Length, Lyrics, Rank, Genre, File_Path) VALUES (:name, :len, :lyrics, :rank, :genre, :fp)" [":name" := name, ":len" := len, ":lyrics" := lyrics, ":rank" := rank, ":genre" := genre, ":fp" := file_path]
+  close db_conn
