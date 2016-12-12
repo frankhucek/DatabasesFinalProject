@@ -59,6 +59,11 @@ routes = do
 
   S.get "/add" $ serveStaticHTML "static/html/add.html"
 
+  S.get "/delete" $ serveStaticHTML "static/html/delete.html"
+
+  S.get "/update" $ serveStaticHTML "static/html/update.html"
+
+  -- INSERT PAGES
   S.post "/insertSong" $ do
     name <- param "songsName"
     len <- param "songsLength"
@@ -117,6 +122,60 @@ routes = do
     aid <- param "memberOfArtistID"
     liftIO $ insertIntoMemberOf mid aid
     redirect "/add"
+
+  -- DELETE PAGES
+  S.post "/deleteSong" $ do
+    sid <- param "songID"
+    liftIO $ deleteSong sid
+    redirect "/delete"
+
+  S.post "/deleteAlbum" $ do
+    aid <- param "albumID"
+    liftIO $ deleteAlbum aid
+    redirect "/delete"
+
+  S.post "/deleteArtist" $ do
+    aid <- param "artistID"
+    liftIO $ deleteArtist aid
+    redirect "/delete"
+
+  S.post "/deleteMusician" $ do
+    mid <- param "musicianID"
+    liftIO $ deleteMusician mid
+    redirect "/delete"
+
+  S.post "/deleteProduces" $ do
+    pid <- param "producesAlbumID"
+    liftIO $ deleteProduces pid
+    redirect "/delete"
+
+  S.post "/deleteMemberOf" $ do
+    mid <- param "memberOfMusicianID"
+    liftIO $ deleteMemberOf mid
+    redirect "/delete"
+
+  S.post "/deleteCreates" $ do
+    sid <- param "createsSongID"
+    liftIO $ deleteCreates sid
+    redirect "/delete"
+
+  S.post "/deleteTracks" $ do
+    sid <- param "tracksSongID"
+    liftIO $ deleteTracks sid
+    redirect "/delete"
+
+  -- UPDATE PAGES
+  S.post "/updateAlbum" $ do
+    aid <- param "albumsID"
+    name <- param "albumsName"
+    desc <- param "albumsDescription"
+    release <- param "albumsReleaseDate"
+    pic <- param "albumsPictureFilePath"
+    sales_num <- param "albumsSalesNumber"
+    label <- param "albumsRecordLabel"
+    liftIO $ updateAlbum aid name desc release pic sales_num label
+    redirect "/update"
+
 
 formatStringList :: [String] -> String
 formatStringList info = foldr (++) [] $ fmap (++"<br/>") $ map replce info
@@ -285,4 +344,60 @@ insertIntoMemberOf :: Int -> Int -> IO ()
 insertIntoMemberOf mid aid = do
   db_conn <- open db_file
   executeNamed db_conn "INSERT INTO Member_Of (Artist_ID, Musician_ID) VALUES (:aid, :mid)" [":aid" := aid, ":mid" := mid]
+  close db_conn
+
+-- DELETES
+deleteSong :: Int -> IO ()
+deleteSong sid = do
+  db_conn <- open db_file
+  executeNamed db_conn "DELETE FROM Songs WHERE Song_ID = :sid" [":sid" := sid]
+  close db_conn
+
+deleteAlbum :: Int -> IO ()
+deleteAlbum aid = do
+  db_conn <- open db_file
+  executeNamed db_conn "DELETE FROM Albums WHERE Album_ID = :aid" [":aid" := aid]
+  close db_conn
+
+deleteArtist :: Int -> IO ()
+deleteArtist aid = do
+  db_conn <- open db_file
+  executeNamed db_conn "DELETE FROM Artists WHERE Artist_ID = :aid" [":aid" := aid]
+  close db_conn
+
+deleteMusician :: Int -> IO ()
+deleteMusician mid = do
+  db_conn <- open db_file
+  executeNamed db_conn "DELETE FROM Musicians WHERE Musician_ID = :mid" [":mid" := mid]
+  close db_conn
+
+deleteProduces :: Int -> IO ()
+deleteProduces aid = do
+  db_conn <- open db_file
+  executeNamed db_conn "DELETE FROM Produces WHERE Album_ID = :aid" [":aid" := aid]
+  close db_conn
+
+deleteMemberOf :: Int -> IO ()
+deleteMemberOf mid = do
+  db_conn <- open db_file
+  executeNamed db_conn "DELETE FROM Member_Of WHERE Musician_ID = :mid" [":mid" := mid]
+  close db_conn
+
+deleteCreates :: Int -> IO ()
+deleteCreates sid = do
+  db_conn <- open db_file
+  executeNamed db_conn "DELETE FROM Creates WHERE Song_ID = :sid" [":sid" := sid]
+  close db_conn
+
+deleteTracks :: Int -> IO ()
+deleteTracks sid = do
+  db_conn <- open db_file
+  executeNamed db_conn "DELETE FROM Tracks WHERE Song_ID = :sid" [":sid" := sid]
+  close db_conn
+
+-- UPDATE QUERIES
+updateAlbum :: Int -> String -> String -> String -> String -> Int -> String -> IO ()
+updateAlbum aid name desc release pic sales_num label = do
+  db_conn <- open db_file
+  withTransaction db_conn $ executeNamed db_conn "UPDATE Albums set Name = :name, Description = :desc, Release_Date = :release, Picture_File_Path = :pic, Sales_Number = :sales_num, Record_Label = :label where Album_ID = :aid" [":aid" := aid, ":name" := name, ":desc" := desc, ":release" := release, ":pic" := pic, ":sales_num" := sales_num, ":label" := label]
   close db_conn
