@@ -45,6 +45,14 @@ routes = do
     musicianInfo <- liftIO $ getMusiciansByName ""
     serveDataPage "static/html/musicianOut.html" (formatStringList musicianInfo)
 
+  S.get "/date" $ serveStaticHTML "static/html/dates.html"
+
+  S.get "/datequery" $ do
+    start <- param "startDate"
+    end <- param "endDate"
+    albumDateRangeInfo <- liftIO $ getAlbumsByDateRange start end
+    serveDateQuery (formatStringList albumDateRangeInfo)
+
   S.get "/searchquery" $ do
     -- get search query string
     search <- param "search_box" -- looks through query that called this route
@@ -176,6 +184,57 @@ routes = do
     liftIO $ updateAlbum aid name desc release pic sales_num label
     redirect "/update"
 
+  S.post "/updateArtist" $ do
+    aid <- param "artistsID"
+    name <- param "artistsName"
+    desc <- param "artistsDescription"
+    form_date <- param "artistsFormationDate"
+    pic <- param "artistsPictureFilePath"
+    liftIO $ updateArtist aid name desc form_date pic
+    redirect "/update"
+
+  S.post "/updateSong" $ do
+    sid <- param "songsID"
+    name <- param "songsName"
+    len <- param "songsLength"
+    lyr <- param "songsLyrics"
+    rank <- param "songsRank"
+    genre <- param "songsGenre"
+    fp <- param "songsFilePath"
+    liftIO $ updateSong sid name len lyr rank genre fp
+    redirect "/update"
+
+  S.post "/updateMusician" $ do
+    mid <- param "musiciansID"
+    name <- param "musiciansName"
+    dob <- param "musiciansDateOfBirth"
+    liftIO $ updateMusician mid name dob
+    redirect "/update"
+
+  S.post "/updateTrack" $ do
+    sid <- param "tracksSongID"
+    aid <- param "tracksAlbumID"
+    tracknum <- param "tracksNumber"
+    liftIO $ updateTrack sid aid tracknum
+    redirect "/update"
+
+  S.post "/updateCreates" $ do
+    sid <- param "createsSongID"
+    aid <- param "createsArtistID"
+    liftIO $ updateCreates sid aid
+    redirect "/update"
+
+  S.post "/updateProduces" $ do
+    aid <- param "producesAlbumID"
+    artid <- param "producesArtistID"
+    liftIO $ updateProduces aid artid
+    redirect "/update"
+
+  S.post "/updateMemberOf" $ do
+    mid <- param "memberOfMusicianID"
+    aid <- param "memberOfArtistID"
+    liftIO $ updateMemberOf mid aid
+    redirect "/update"
 
 formatStringList :: [String] -> String
 formatStringList info = foldr (++) [] $ fmap (++"<br/>") $ map replce info
@@ -214,6 +273,15 @@ serveQueryPage songInfo albumInfo artistInfo musicianInfo genreInfo trackInfo al
     ++ "<br/><br/>" ++ musician_hdr ++ musicianInfo
     ++ "<br/><br/>" ++ genre_hdr ++ genreInfo ++ "<br/><br/>" ++ album_genre
     ++ "<br/><br/>" ++ track_hdr ++ trackInfo
+    ++ html_footer
+
+serveDateQuery :: String -> ActionM()
+serveDateQuery dateQueryInfo = do
+  html_header <- liftIO $ readFile "static/html/header.html"
+  html_footer <- liftIO $ readFile "static/html/footer.html"
+  html_raw <- liftIO $ readFile "static/html/dates.html"
+  S.html $ T.pack $ html_header ++ html_raw
+    ++ "<br/><br/>" ++ dateQueryInfo
     ++ html_footer
 
 replc :: Char -> Char
@@ -396,8 +464,51 @@ deleteTracks sid = do
   close db_conn
 
 -- UPDATE QUERIES
+-- Uses COMMIT/ROLLBACK
 updateAlbum :: Int -> String -> String -> String -> String -> Int -> String -> IO ()
 updateAlbum aid name desc release pic sales_num label = do
   db_conn <- open db_file
   withTransaction db_conn $ executeNamed db_conn "UPDATE Albums set Name = :name, Description = :desc, Release_Date = :release, Picture_File_Path = :pic, Sales_Number = :sales_num, Record_Label = :label where Album_ID = :aid" [":aid" := aid, ":name" := name, ":desc" := desc, ":release" := release, ":pic" := pic, ":sales_num" := sales_num, ":label" := label]
+  close db_conn
+
+updateArtist :: Int -> String -> String -> String -> String -> IO ()
+updateArtist aid name desc form_date pic = do
+  db_conn <- open db_file
+  withTransaction db_conn $ executeNamed db_conn "UPDATE Artists set Name = :name, Description = :desc, Formation_Date = :form_date, Picture_File_Path = :pic WHERE Artist_ID = :aid" [":aid" := aid, ":name" := name, ":desc" := desc, ":form_date" := form_date, ":pic" := pic]
+  close db_conn
+
+updateSong :: Int -> String -> Int -> String -> Int -> String -> String -> IO ()
+updateSong sid name len lyr rank genre fp = do
+  db_conn <- open db_file
+  withTransaction db_conn $ executeNamed db_conn "UPDATE Songs set Name = :name, Length = :len, Lyrics = :lyr, Rank = :rank, Genre = :genre, File_Path = :fp WHERE Song_ID = :sid" [":sid" := sid, ":name" := name, ":len" := len, ":lyr" := lyr, ":rank" := rank, ":genre" := genre, ":fp" := fp]
+  close db_conn
+
+updateMusician :: Int -> String -> String -> IO ()
+updateMusician mid name dob = do
+  db_conn <- open db_file
+  withTransaction db_conn $ executeNamed db_conn "UPDATE Musicians set Name = :name, Date_Of_Birth = :dob WHERE Musician_ID = :mid" [":mid" := mid, ":name" := name, ":dob" := dob]
+  close db_conn
+
+updateTrack :: Int -> Int -> Int -> IO ()
+updateTrack sid aid tracknum = do
+  db_conn <- open db_file
+  withTransaction db_conn $ executeNamed db_conn "UPDATE Tracks set Album_ID = :aid, Track_Number = :tracknum WHERE Tracks.Song_ID = :sid" [":sid" := sid, ":aid" := aid, ":tracknum" := tracknum]
+  close db_conn
+
+updateCreates :: Int -> Int -> IO ()
+updateCreates sid aid = do
+  db_conn <- open db_file
+  withTransaction db_conn $ executeNamed db_conn "UPDATE Creates set Artist_ID = :aid WHERE Song_ID = :sid" [":sid" := sid, ":aid" := aid]
+  close db_conn
+
+updateProduces :: Int -> Int -> IO ()
+updateProduces aid artid = do
+  db_conn <- open db_file
+  withTransaction db_conn $ executeNamed db_conn "UPDATE Produces set Artist_ID = :artid WHERE Album_ID = :aid" [":aid" := aid, ":artid" := artid]
+  close db_conn
+
+updateMemberOf :: Int -> Int -> IO ()
+updateMemberOf mid aid = do
+  db_conn <- open db_file
+  withTransaction db_conn $ executeNamed db_conn "UPDATE Member_Of set Artist_ID = :aid WHERE Musician_ID = :mid" [":mid" := mid, ":aid" := aid]
   close db_conn
